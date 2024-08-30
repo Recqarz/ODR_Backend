@@ -7,7 +7,9 @@ import {
     // getOneUser,
     registerUser,
     loginUser,
-    reGenerateAccessToken
+    reGenerateAccessToken,
+    forgotPassword,
+    verifyforgotPassword
 } from "./controller.js";
 const router = express.Router();
 
@@ -16,6 +18,9 @@ router.post("/", registerUser)
 router.get("/all",getAllUser)
 router.post("/login",loginUser)
 router.post("/renew",reGenerateAccessToken)
+router.post('/forget',forgotPassword)
+router.post('/verify/:userId/:hashedToken',verifyforgotPassword)
+
 
 
 export default router

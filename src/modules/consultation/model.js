@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const QuerySchema = new mongoose.Schema({
+const ConsultationSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -51,4 +51,5 @@ const QuerySchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export default mongoose.model('Query', QuerySchema);
+export default mongoose.model('Consultation', ConsultationSchema);
+

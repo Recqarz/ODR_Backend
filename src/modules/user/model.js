@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'user', 'ops','management'], 
+        enum: ['admin', 'user','arbitory'], 
         required: true
     },
     tokens:{
@@ -35,6 +35,13 @@ const userSchema = mongoose.Schema({
         refreshToken:{type:String},
         refreshTokenExpiry:{type:Date}
     },
+    token:{
+        type:String
+    },
+    tokenExpiry:{
+        type:String
+    },
+
     Webtokens:{
         type:mongoose.Schema.Types.Array
     }

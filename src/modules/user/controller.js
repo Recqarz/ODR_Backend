@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import constant from '../../utilities/constant.js';
 import { customResponse, customPagination } from "../../utilities/customResponse.js";
 import User from './model.js';
+import { ses } from '../../config/aws.js';
 
 
 
@@ -50,7 +51,7 @@ export const getAllUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
     try {
-        const { userName, email, name, password, role, client } = req.body;
+        const { userName, email, name, password, role } = req.body;
         if (!userName || !email || !name || !password || !role) {
             return res.status(constant.HTTP_400_CODE).send(customResponse({
                 code: constant.HTTP_400_CODE,
@@ -137,6 +138,13 @@ export const loginUser = async (req, res) => {
     }
 }
 
+function generateOTP(length) {
+    let otp = '';
+    for (let i = 0; i < length; i++) {
+      otp += Math.floor(Math.random() * 10); // Generates a random digit from 0 to 9
+    }
+    return otp;
+  }
 export const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
@@ -144,30 +152,55 @@ export const forgotPassword = async (req, res) => {
         // Check if the email exists
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(constant.HTTP_404_CODE).send(customResponse({
-                code: constant.HTTP_404_CODE,
+            return res.status(constant.HTTP_400_CODE).send(customResponse({
+                code: constant.HTTP_400_CODE,
                 message: "User with this email does not exist",
             }));
         }
 
         // Generate a reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        const hash = await bcrypt.hash(resetToken, 10);
+        const hash = generateOTP(6);
+        // const hash = await bcrypt.hash(resetToken, 10);
 
         // Set reset token and expiration on the user
-        user.resetPasswordToken = hash;
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        user.token = hash;
+        user.tokenExpiry = Date.now() + 3600000; // 1 hour
         await user.save();
 
         // Send reset email
-        const resetUrl = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
-        const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please make a PUT request to: ${resetUrl}`;
+        // const resetUrl = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
+        const link = `${process.env.domainName}/password-reset/${user._id}/${hash}`;
+        const message = `
+        <p>You are receiving this email because you (or someone else) have requested the reset of a password.</p>
+        <p>Please make a <a href="${link}" style="color: #007bff; text-decoration: none;"> Link</a> to reset your password.</p>
+        <br/>
+        <br/>
+        <br/>
+        <p>if link is not workin, Paste this URL in browser</p>
+        <>${link}</>
+        `;        const emailParams = {
+            Destination: {
+              ToAddresses: [ user.email], // Corrected to use plantdata.email
+            },
+            Message: {
+              Body: {
+                Html: {
+                  Charset: "UTF-8",
+                  Data: message, // HTML content for the email body
+                },
+              },
+              Subject: {
+                Charset: "UTF-8",
+                Data: 'Forget Password', // Dynamic subject
+              },
+            },
+            Source: 'cc1@areness.co.in', 
+            ConfigurationSetName: 'arenessconin', // Name of your SES configuration set
+          };
+  
+          const sentEmailData = await ses.sendEmail(emailParams).promise();
+          console.log("Email sent:", sentEmailData.MessageId);
 
-        await sendEmail({
-            to: user.email,
-            subject: 'Password Reset',
-            text: message,
-        });
 
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
@@ -182,6 +215,40 @@ export const forgotPassword = async (req, res) => {
         }));
     }
 };
+export const verifyforgotPassword = async (req, res) => {
+    try {
+        const {hashedToken, userId} = req.params;
+        const { password } = req.body; 
+
+        const user = await User.findOne({
+            token: hashedToken, 
+            tokenExpiry: { $gt: Date.now() }, // Token has not expired
+            });
+        if(!user){
+            return res.status(constant.HTTP_400_CODE).send(customResponse({
+                code: constant.HTTP_400_CODE,
+                message: "User with this email does not exist",
+            }));
+        }
+        const salt = await bcrypt.genSalt(Number.parseInt(process.env.ENC_SALT_ROUND));
+        const hashPassword = await bcrypt.hash(password, salt);
+        user.password = hashPassword
+        await user.save()
+        return res.status(constant.HTTP_200_CODE).send(customResponse({
+            code: constant.HTTP_200_CODE,
+            message: "Password updated successfully",
+        }));
+
+    
+    } catch (err) {
+        console.error(err);
+        return res.status(constant.HTTP_500_CODE).send(customResponse({
+            code: constant.HTTP_500_CODE,
+            message: err.message,
+        }));
+    }
+};
+
 
 
 export const reGenerateAccessToken = async (req, res) => {
@@ -243,5 +310,7 @@ export default  {
     getAllUser,
     registerUser,
     loginUser,
-    reGenerateAccessToken
+    reGenerateAccessToken,
+    forgotPassword,
+    verifyforgotPassword
 }

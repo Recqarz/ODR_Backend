@@ -1,4 +1,4 @@
-import { express } from 'express'
+import  express  from 'express'
 import {
     createConsultation,
     getConsultationById,
@@ -6,7 +6,7 @@ import {
     updateConsultationById,
     
 } from './controller.js'
-consultation = express.Router();
+const consultation = express.Router();
 
 consultation.post("/", createConsultation)
 consultation.get("/:id",getConsultationById)

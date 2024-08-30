@@ -1,5 +1,9 @@
 
 
+import constant from '../../utilities/constant.js';
+import { customResponse, customPagination } from "../../utilities/customResponse.js";
+import Consultation from './model.js';
+
 
 export const createConsultation = async (req, res) => {
     try {
@@ -14,7 +18,7 @@ export const createConsultation = async (req, res) => {
         }
 
         // Create new query
-        const query = new Query({
+        const query = new Consultation({
             name,
             email,
             phone,
@@ -34,7 +38,7 @@ export const createConsultation = async (req, res) => {
 
         return res.status(constant.HTTP_201_CODE).send(customResponse({
             code: constant.HTTP_201_CODE,
-            message: "Query has been created successfully",
+            message: "Consultation has been created successfully",
             data: query,
         }));
     } catch (err) {
@@ -49,18 +53,18 @@ export const createConsultation = async (req, res) => {
 
 export const getConsultationById = async (req, res) => {
     try {
-        const query = await Query.findById(req.params.id);
+        const query = await Consultation.findById(req.params.id);
 
         if (!query) {
             return res.status(constant.HTTP_404_CODE).send(customResponse({
                 code: constant.HTTP_404_CODE,
-                message: "Query not found",
+                message: "Consultation not found",
             }));
         }
 
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
-            message: "Query retrieved successfully",
+            message: "Consultation retrieved successfully",
             data: query,
         }));
     } catch (err) {
@@ -78,13 +82,13 @@ export const getAllConsultation = async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
 
         // Fetch all queries with pagination
-        const queries = await Query.find()
+        const queries = await Consultation.find()
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .exec();
 
         // Get total documents count
-        const count = await Query.countDocuments();
+        const count = await Consultation.countDocuments();
 
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
@@ -112,18 +116,18 @@ export const updateConsultationById = async (req, res) => {
         const updateData = req.body;
 
         // Find the query by ID and update it with the new data
-        const query = await Query.findByIdAndUpdate(id, updateData, { new: true });
+        const query = await Consultation.findByIdAndUpdate(id, updateData, { new: true });
 
         if (!query) {
             return res.status(constant.HTTP_404_CODE).send(customResponse({
                 code: constant.HTTP_404_CODE,
-                message: "Query not found",
+                message: "Consultation not found",
             }));
         }
 
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
-            message: "Query updated successfully",
+            message: "Consultation updated successfully",
             data: query,
         }));
     } catch (err) {
