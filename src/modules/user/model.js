@@ -4,11 +4,6 @@ import jwt from 'jsonwebtoken';
 
 
 const userSchema = mongoose.Schema({
-    username:{
-        type:String,
-        required:true,
-        unique:true
-    },
     email:{
         type:String,
         required:true,
@@ -19,6 +14,17 @@ const userSchema = mongoose.Schema({
     name:{
         type:String,
         required:true,
+    },
+    mobile: {
+        type: String,
+        required: true,
+        unique: true, // Ensure the mobile number is unique
+        validate: {
+            validator: function(v) {
+                return /^\d{10}$/.test(v); // Validates that the mobile number is exactly 10 digits
+            },
+            message: props => `${props.value} is not a valid mobile number!`
+        }
     },
     password:{
         type:String,
@@ -42,9 +48,6 @@ const userSchema = mongoose.Schema({
         type:String
     },
 
-    Webtokens:{
-        type:mongoose.Schema.Types.Array
-    }
 
 })
 

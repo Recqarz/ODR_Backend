@@ -18,6 +18,7 @@ router.post("/", registerUser)
 router.get("/all",getAllUser)
 router.post("/login",loginUser)
 router.post("/renew",reGenerateAccessToken)
+router.post("/register",registerUser)
 router.post('/forget',forgotPassword)
 router.post('/verify/:userId/:hashedToken',verifyforgotPassword)
 
