@@ -1,16 +1,14 @@
-
-
-import constant from '../../utilities/constant.js';
-import { customResponse, customPagination } from "../../utilities/customResponse.js";
-import Consultation from './model.js';
+import constant from "../../utilities/constant.js";
+import { customResponse } from "../../utilities/customResponse.js";
+import Cosultation from "./model.js";
 
 
 export const createConsultation = async (req, res) => {
     try {
-        const { name, email, phone, state, city, pincode, description, category, proof, defaulter_name, defaulter_email, defaulter_phone } = req.body;
+        const { name, email, phone, state, city, pincode, address ,description, category, proof, defaulter_name, defaulter_email, defaulter_phone } = req.body;
 
         // Validate required fields
-        if (!name || !email || !phone || !state || !city || !pincode || !description || !category || !proof || !defaulter_name || !defaulter_email || !defaulter_phone) {
+        if (!name || !email || !phone || !state || !city || !pincode || !address || !description || !category || !proof || !defaulter_name || !defaulter_email || !defaulter_phone) {
             return res.status(constant.HTTP_400_CODE).send(customResponse({
                 code: constant.HTTP_400_CODE,
                 message: "All fields are required",
@@ -18,13 +16,14 @@ export const createConsultation = async (req, res) => {
         }
 
         // Create new query
-        const query = new Consultation({
+        const cosultation = new Cosultation({
             name,
             email,
             phone,
             state,
             city,
             pincode,
+            address,
             description,
             category,
             proof,
@@ -33,13 +32,13 @@ export const createConsultation = async (req, res) => {
             defaulter_phone,
         });
 
-        // Save the query to the database
-        await query.save();
+        // Save the cosultation to the database
+        await cosultation.save();
 
         return res.status(constant.HTTP_201_CODE).send(customResponse({
             code: constant.HTTP_201_CODE,
-            message: "Consultation has been created successfully",
-            data: query,
+            message: "cosultation has been created successfully",
+            data: cosultation,
         }));
     } catch (err) {
         console.error(err);
@@ -53,9 +52,9 @@ export const createConsultation = async (req, res) => {
 
 export const getConsultationById = async (req, res) => {
     try {
-        const query = await Consultation.findById(req.params.id);
+        const cosultation = await Cosultation.findById(req.params.id);
 
-        if (!query) {
+        if (!cosultation) {
             return res.status(constant.HTTP_404_CODE).send(customResponse({
                 code: constant.HTTP_404_CODE,
                 message: "Consultation not found",
@@ -65,7 +64,7 @@ export const getConsultationById = async (req, res) => {
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
             message: "Consultation retrieved successfully",
-            data: query,
+            data: cosultation,
         }));
     } catch (err) {
         console.error(err);
@@ -81,23 +80,23 @@ export const getAllConsultation = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
 
-        // Fetch all queries with pagination
-        const queries = await Consultation.find()
+        // Fetch all consultations with pagination
+        const consultations = await Cosultation.find({})
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .exec();
-
+            
         // Get total documents count
-        const count = await Consultation.countDocuments();
+        const count = await Cosultation.countDocuments();
 
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
-            message: "Queries retrieved successfully",
+            message: "Consultations retrieved successfully",
             data: {
-                queries,
+                consultations,
                 totalPages: Math.ceil(count / limit),
                 currentPage: page,
-                totalQueries: count,
+                totalConsultations: count,
             },
         }));
     } catch (err) {
@@ -110,15 +109,16 @@ export const getAllConsultation = async (req, res) => {
 };
 
 
+
 export const updateConsultationById = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
 
-        // Find the query by ID and update it with the new data
-        const query = await Consultation.findByIdAndUpdate(id, updateData, { new: true });
+        // Find the cosultation by ID and update it with the new data
+        const cosultation = await Cosultation.findByIdAndUpdate(id, updateData, { new: true });
 
-        if (!query) {
+        if (!cosultation) {
             return res.status(constant.HTTP_404_CODE).send(customResponse({
                 code: constant.HTTP_404_CODE,
                 message: "Consultation not found",
@@ -128,7 +128,7 @@ export const updateConsultationById = async (req, res) => {
         return res.status(constant.HTTP_200_CODE).send(customResponse({
             code: constant.HTTP_200_CODE,
             message: "Consultation updated successfully",
-            data: query,
+            data: cosultation,
         }));
     } catch (err) {
         console.error(err);

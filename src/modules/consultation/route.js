@@ -9,9 +9,9 @@ import {
 const consultation = express.Router();
 
 consultation.post("/", createConsultation)
-consultation.get("/:id",getConsultationById)
 consultation.get("/all",getAllConsultation)
-consultation.put("/",updateConsultationById)
+consultation.get("/:id",getConsultationById)
+consultation.put("/:id",updateConsultationById)
 
 
 export default consultation
