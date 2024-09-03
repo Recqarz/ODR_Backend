@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import constant from '../../utilities/constant.js';
 import { customResponse, customPagination } from "../../utilities/customResponse.js";
 import User from './model.js';
-import { ses } from '../../config/aws.js';
+import  {ses}  from '../../config/aws.js';
 
 
 
@@ -14,9 +14,10 @@ export const getAllUser = async (req, res) => {
         const page = parseInt(req.query.page) || 1; // Default to page 1
         const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
         const skip = (page - 1) * limit;
+        const userType = req.query.user
 
         // Fetch users with pagination
-        const users = await User.find()
+        const users = await User.find({role:userType})
             .skip(skip)
             .limit(limit);
 
@@ -227,7 +228,7 @@ export const verifyforgotPassword = async (req, res) => {
         if(!user){
             return res.status(constant.HTTP_400_CODE).send(customResponse({
                 code: constant.HTTP_400_CODE,
-                message: "User with this email does not exist",
+                message: "Link has been expired",
             }));
         }
         const salt = await bcrypt.genSalt(Number.parseInt(process.env.ENC_SALT_ROUND));
