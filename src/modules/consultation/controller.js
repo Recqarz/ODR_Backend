@@ -5,10 +5,9 @@ import Cosultation from "./model.js";
 
 export const createConsultation = async (req, res) => {
     try {
-        const { name, email, phone, state, city, pincode, address ,description, category, proof, defaulter_name, defaulter_email, defaulter_phone } = req.body;
-
-        // Validate required fields
-        if (!name || !email || !phone || !state || !city || !pincode || !address || !description || !category || !proof || !defaulter_name || !defaulter_email || !defaulter_phone) {
+        const { name, email, phone, state, city, pincode, address ,description, category, defaulter_name, defaulter_email, defaulter_phone } = req.body;
+        // Validate required     fields
+        if (!name || !email || !phone || !state || !city || !pincode || !address || !description || !category  || !defaulter_name || !defaulter_email || !defaulter_phone) {
             return res.status(constant.HTTP_400_CODE).send(customResponse({
                 code: constant.HTTP_400_CODE,
                 message: "All fields are required",
@@ -26,7 +25,7 @@ export const createConsultation = async (req, res) => {
             address,
             description,
             category,
-            proof,
+            proof:req?.file?.location,
             defaulter_name,
             defaulter_email,
             defaulter_phone,
