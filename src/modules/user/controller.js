@@ -170,7 +170,7 @@ export const forgotPassword = async (req, res) => {
 
         // Send reset email
         // const resetUrl = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
-        const link = `${process.env.domainName}/password-reset/${user._id}/${hash}`;
+        const link = `${process.env.domainName}/reset-your-password/${user._id}/${hash}`;
         const message = `
         <p>You are receiving this email because you (or someone else) have requested the reset of a password.</p>
         <p>Please make a <a href="${link}" style="color: #007bff; text-decoration: none;"> Link</a> to reset your password.</p>
