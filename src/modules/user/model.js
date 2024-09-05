@@ -15,6 +15,10 @@ const userSchema = mongoose.Schema({
         type:String,
         required:true,
     },
+    organizationName:{
+        type:String,
+        required:true,
+    },
     mobile: {
         type: String,
         required: true,

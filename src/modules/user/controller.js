@@ -52,8 +52,8 @@ export const getAllUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
     try {
-        const { mobile, email, name, password, role } = req.body;
-        if (!mobile || !email || !name || !password || !role) {
+        const { mobile, email, name, organizationName, password, role } = req.body;
+        if (!mobile || !email || !name || !organizationName || !password || !role) {
             return res.status(constant.HTTP_400_CODE).send(customResponse({
                 code: constant.HTTP_400_CODE,
                 message: "mobile, email, name, password, and role are required",
@@ -80,7 +80,7 @@ export const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(Number.parseInt(process.env.ENC_SALT_ROUND));
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const user = new User({ mobile: mobile, email: email, name: name, role: role, password: hashPassword });
+        const user = new User({ mobile: mobile, email: email, name: name, organizationName:organizationName, role: role, password: hashPassword });
         await user.save();
 
         return res.status(constant.HTTP_201_CODE).send(customResponse({
