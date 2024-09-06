@@ -1,6 +1,8 @@
 
 import constant from '../../utilities/constant.js';
 import { customResponse, customPagination } from "../../utilities/customResponse.js";
+import { generateTicketEmailContent } from '../../utilities/templates.js';
+import { sendMail } from '../../utilities/utils.js';
 import Query from './model.js';
 
 
@@ -17,6 +19,7 @@ export const createQuery = async (req, res) => {
 
         const query = new Query({ name, email, phone, description, category });
         await query.save();
+        sendMail(email, 'Query', generateTicketEmailContent(name, query.queryNumber, 'Areness'))
 
         return res.status(constant.HTTP_201_CODE).send(customResponse({
             code: constant.HTTP_201_CODE,

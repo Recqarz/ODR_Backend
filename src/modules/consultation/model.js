@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
+import mongooseSequence from 'mongoose-sequence';
 
+const AutoIncrement = mongooseSequence(mongoose);
 const ConsultationSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -53,6 +55,7 @@ const ConsultationSchema = new mongoose.Schema({
         required: false,
     },
 }, { timestamps: true });
+ConsultationSchema.plugin(AutoIncrement, {inc_field: 'consuktantNumber'});
 
 export default mongoose.model('Consultation', ConsultationSchema);
 

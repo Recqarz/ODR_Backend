@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import mongooseSequence from 'mongoose-sequence';
+
+const AutoIncrement = mongooseSequence(mongoose);
 
 const QuerySchema = new mongoose.Schema({
   name: {
@@ -24,6 +27,11 @@ const QuerySchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  status: {
+    type: Boolean,
+    required: true,
+    default:false
+},
   category: {
     type: String,
     required: true,
@@ -33,6 +41,7 @@ const QuerySchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+QuerySchema.plugin(AutoIncrement, {inc_field: 'queryNumber'});
 
 const Query = mongoose.model('Query', QuerySchema);
 

@@ -1,6 +1,7 @@
 
 import mongoose  from "mongoose";
 
+
 const verifyEmail = mongoose.Schema({
 
     email: {
@@ -24,4 +25,5 @@ const verifyEmail = mongoose.Schema({
 })
 
 const emailVerify = mongoose.Schema("emailverify", verifyEmail)
+
 export default emailVerify

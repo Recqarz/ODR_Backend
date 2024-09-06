@@ -6,6 +6,8 @@ import constant from '../../utilities/constant.js';
 import { customResponse, customPagination } from "../../utilities/customResponse.js";
 import User from './model.js';
 import  {ses}  from '../../config/aws.js';
+import { sendMail } from '../../utilities/utils.js';
+import { generateEmailContent } from '../../utilities/templates.js';
 
 
 
@@ -82,6 +84,7 @@ export const registerUser = async (req, res) => {
 
         const user = new User({ mobile: mobile, email: email, name: name, organizationName:organizationName, role: role, password: hashPassword });
         await user.save();
+        sendMail(email,'Welcome to ODR!' , generateEmailContent(name , 'ODR', 'Areness'))
 
         return res.status(constant.HTTP_201_CODE).send(customResponse({
             code: constant.HTTP_201_CODE,
